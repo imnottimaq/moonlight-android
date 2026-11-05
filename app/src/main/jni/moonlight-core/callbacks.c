@@ -159,6 +159,15 @@ int BridgeDrSubmitDecodeUnit(PDECODE_UNIT decodeUnit) {
     currentEntry = decodeUnit->bufferList;
     offset = 0;
     while (currentEntry != NULL) {
+        // Fork extension (PyroWave partial frames): a BUFFER_TYPE_GAP entry
+        // marks data following a packet-loss hole. This bridge hands the
+        // decoder one contiguous buffer, so a resync point cannot be conveyed;
+        // truncate the frame at the hole instead. The prefix parses cleanly
+        // and the missing blocks heal via keep-previous + refresh.
+        if (currentEntry->bufferType == BUFFER_TYPE_GAP) {
+            break;
+        }
+
         // Submit parameter set NALUs separately from picture data
         if (currentEntry->bufferType != BUFFER_TYPE_PICDATA) {
             // Use the beginning of the buffer each time since this is a separate
@@ -461,7 +470,8 @@ Java_com_limelight_nvstream_jni_MoonBridge_startConnection(JNIEnv *env, jclass c
                                                            jint clientRefreshRateX100,
                                                            jbyteArray riAesKey, jbyteArray riAesIv,
                                                            jint videoCapabilities,
-                                                           jint colorSpace, jint colorRange) {
+                                                           jint colorSpace, jint colorRange,
+                                                           jint pyroWaveAdaptiveFec, jint pyroWaveAdaptiveBitrate) {
     SERVER_INFORMATION serverInfo = {
             .address = (*env)->GetStringUTFChars(env, address, 0),
             .serverInfoAppVersion = (*env)->GetStringUTFChars(env, appVersion, 0),
@@ -481,7 +491,9 @@ Java_com_limelight_nvstream_jni_MoonBridge_startConnection(JNIEnv *env, jclass c
             .clientRefreshRateX100 = clientRefreshRateX100,
             .encryptionFlags = ENCFLG_AUDIO,
             .colorSpace = colorSpace,
-            .colorRange = colorRange
+            .colorRange = colorRange,
+            .pyroWaveAdaptiveFec = pyroWaveAdaptiveFec,
+            .pyroWaveAdaptiveBitrate = pyroWaveAdaptiveBitrate
     };
 
     jbyte* riAesKeyBuf = (*env)->GetByteArrayElements(env, riAesKey, NULL);

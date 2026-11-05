@@ -16,11 +16,13 @@ public class MoonBridge {
     public static final int VIDEO_FORMAT_H265_MAIN10 = 0x0200;
     public static final int VIDEO_FORMAT_AV1_MAIN8 = 0x1000;
     public static final int VIDEO_FORMAT_AV1_MAIN10 = 0x2000;
+    public static final int VIDEO_FORMAT_PYROWAVE = 0x010000; // PyroWave GPU wavelet codec (Sunshine extension)
 
     public static final int VIDEO_FORMAT_MASK_H264 = 0x000F;
     public static final int VIDEO_FORMAT_MASK_H265 = 0x0F00;
     public static final int VIDEO_FORMAT_MASK_AV1 = 0xF000;
     public static final int VIDEO_FORMAT_MASK_10BIT = 0x2200;
+    public static final int VIDEO_FORMAT_MASK_PYROWAVE = 0x0F0000;
 
     public static final int BUFFER_TYPE_PICDATA = 0;
     public static final int BUFFER_TYPE_SPS = 1;
@@ -348,7 +350,8 @@ public class MoonBridge {
                                               int clientRefreshRateX100,
                                               byte[] riAesKey, byte[] riAesIv,
                                               int videoCapabilities,
-                                              int colorSpace, int colorRange);
+                                              int colorSpace, int colorRange,
+                                              int pyroWaveAdaptiveFec, int pyroWaveAdaptiveBitrate);
 
     public static native void stopConnection();
 
@@ -365,6 +368,11 @@ public class MoonBridge {
     public static native void sendMouseMoveAsMousePosition(short deltaX, short deltaY, short referenceWidth, short referenceHeight);
 
     public static native void sendMouseButton(byte buttonEvent, byte mouseButton);
+
+    // Phase-offset pacing telemetry (client -> Sunshine host). Forwards the PyroWave
+    // decoder's display-backpressure measurement so the host can lock its capture cadence
+    // to this client's display. No-op on non-Sunshine hosts.
+    public static native void sendPhaseOffset(int offsetUs);
 
     public static native void sendMultiControllerInput(short controllerNumber,
                                     short activeGamepadMask, int buttonFlags,

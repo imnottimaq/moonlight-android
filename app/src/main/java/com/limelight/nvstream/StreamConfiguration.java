@@ -31,6 +31,8 @@ public class StreamConfiguration {
     private int colorSpace;
     private boolean persistGamepadsAfterDisconnect;
     private boolean enableUltraLowLatency;
+    private boolean pyroWaveAdaptiveFec;
+    private boolean pyroWaveAdaptiveBitrate;
 
     public static class Builder {
         private StreamConfiguration config = new StreamConfiguration();
@@ -138,6 +140,16 @@ public class StreamConfiguration {
 
         public StreamConfiguration.Builder setColorSpace(int colorSpace) {
             config.colorSpace = colorSpace;
+            return this;
+        }
+
+        public StreamConfiguration.Builder setPyroWaveAdaptiveFec(boolean enabled) {
+            config.pyroWaveAdaptiveFec = enabled;
+            return this;
+        }
+
+        public StreamConfiguration.Builder setPyroWaveAdaptiveBitrate(boolean enabled) {
+            config.pyroWaveAdaptiveBitrate = enabled;
             return this;
         }
 
@@ -257,5 +269,13 @@ public class StreamConfiguration {
 
     public boolean getEnableUltraLowLatency() {
         return enableUltraLowLatency;
+    }
+
+    public boolean getPyroWaveAdaptiveFec() {
+        return pyroWaveAdaptiveFec;
+    }
+
+    public boolean getPyroWaveAdaptiveBitrate() {
+        return pyroWaveAdaptiveBitrate;
     }
 }

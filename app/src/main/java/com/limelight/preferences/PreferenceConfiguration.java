@@ -22,6 +22,7 @@ public class PreferenceConfiguration {
         FORCE_AV1,
         FORCE_HEVC,
         FORCE_H264,
+        FORCE_PYROWAVE,
     };
 
     public enum AnalogStickForScrolling {
@@ -53,6 +54,8 @@ public class PreferenceConfiguration {
     private static final String VIDEO_SCALE_MODE_PREF_STRING = "list_video_scale_mode";
     private static final String SOPS_PREF_STRING = "checkbox_enable_sops";
     private static final String DISABLE_TOASTS_PREF_STRING = "checkbox_disable_warnings";
+    private static final String PYROWAVE_ADAPTIVE_FEC_PREF_STRING = "checkbox_pyrowave_adaptive_fec";
+    private static final String PYROWAVE_ADAPTIVE_BITRATE_PREF_STRING = "checkbox_pyrowave_adaptive_bitrate";
     private static final String HOST_AUDIO_PREF_STRING = "checkbox_host_audio";
     private static final String DEADZONE_PREF_STRING = "seekbar_deadzone";
     private static final String OSC_OPACITY_PREF_STRING = "seekbar_osc_opacity";
@@ -247,6 +250,8 @@ public class PreferenceConfiguration {
     public int onscreenKeyboardWidth;
     public String onscreenKeyboardAlignMode;
     public boolean enforceDisplayMode, useVirtualDisplay, enableSops, playHostAudio, disableWarnings, fullScreen;
+    // PyroWave adaptive streaming opt-ins (Sunshine extension), off by default.
+    public boolean pyrowaveAdaptiveFec, pyrowaveAdaptiveBitrate;
     public ScaleMode videoScaleMode;
     public String language;
     public int renderMode;
@@ -601,6 +606,9 @@ public class PreferenceConfiguration {
         else if (str.equals("neverh265")) {
             return FormatOption.FORCE_H264;
         }
+        else if (str.equals("forcepyrowave")) {
+            return FormatOption.FORCE_PYROWAVE;
+        }
         else {
             // Should never get here
             return FormatOption.AUTO;
@@ -880,6 +888,8 @@ private static int getFramePacingValue(Context context) {
 
         // Checkbox preferences
         config.disableWarnings = prefs.getBoolean(DISABLE_TOASTS_PREF_STRING, DEFAULT_DISABLE_TOASTS);
+        config.pyrowaveAdaptiveFec = prefs.getBoolean(PYROWAVE_ADAPTIVE_FEC_PREF_STRING, false);
+        config.pyrowaveAdaptiveBitrate = prefs.getBoolean(PYROWAVE_ADAPTIVE_BITRATE_PREF_STRING, false);
         config.enforceDisplayMode = prefs.getBoolean(ENFORCE_DISPLAY_MODE_PREF_STRING, DEFAULT_ENFORCE_DISPLAY_MODE);
         config.useVirtualDisplay = prefs.getBoolean(USE_VIRTUAL_DISPLAY_PREF_STRING, DEFAULT_USE_VIRTUAL_DISPLAY);
         config.enableUltraLowLatency = prefs.getBoolean(ENABLE_ULTRA_LOW_LATENCY_PREF_STRING, DEFAULT_ENABLE_ULTRA_LOW_LATENCY);
